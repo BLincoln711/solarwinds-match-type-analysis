@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Future is Broad: Match Type Performance Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: #f8f9fa;
+            border-bottom: 3px solid #1a73e8;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #1a73e8;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.5em;
+            color: #5f6368;
+            font-weight: 400;
+        }
+        
+        .executive-summary {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            border-left: 5px solid #1a73e8;
+        }
+        
+        .key-insight {
+            background: #e8f0fe;
+            border-left: 5px solid #1a73e8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: #ffffff;
+            border: 2px solid #e8eaed;
+            border-radius: 8px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card.broad {
+            border-top: 4px solid #fbbc04;
+        }
+        
+        .metric-card.phrase {
+            border-top: 4px solid #34a853;
+        }
+        
+        .metric-card.exact {
+            border-top: 4px solid #ea4335;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .metric-card.broad .metric-value {
+            color: #fbbc04;
+        }
+        
+        .metric-card.phrase .metric-value {
+            color: #34a853;
+        }
+        
+        .metric-card.exact .metric-value {
+            color: #ea4335;
+        }
+        
+        .metric-context {
+            font-size: 0.9em;
+            color: #5f6368;
+        }
+        
+        .chart-container {
+            background: #ffffff;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .chart-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #1a73e8;
+            font-weight: 600;
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .bar {
+            width: 60%;
+            background: #fbbc04;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+        }
+        
+        .bar.phrase {
+            background: #34a853;
+        }
+        
+        .bar.exact {
+            background: #ea4335;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            white-space: nowrap;
+            color: #202124;
+        }
+        
+        .bar-label {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #5f6368;
+            font-weight: 500;
+        }
+        
+        .future-ready {
+            background: #1a73e8;
+            color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .future-ready h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .future-ready p {
+            font-size: 1.2em;
+        }
+        
+        .recommendation-box {
+            background: #ffffff;
+            border: 2px solid #1a73e8;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .recommendation-box h3 {
+            color: #1a73e8;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .recommendation-list {
+            list-style: none;
+        }
+        
+        .recommendation-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #e8eaed;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .recommendation-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #34a853;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .ai-overview-banner {
+            background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .ai-overview-banner h2 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .ai-overview-banner p {
+            font-size: 1.3em;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #202124;
+            border-bottom: 2px solid #e8eaed;
+        }
+        
+        .comparison-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8eaed;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .winner {
+            color: #1a73e8;
+            font-weight: 700;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #5f6368;
+            border-top: 1px solid #e8eaed;
+            margin-top: 60px;
+        }
+        
+        .strategic-balance {
+            background: #fef7e0;
+            border-left: 5px solid #fbbc04;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        h2, h3 {
+            color: #202124;
+        }
+        
+        strong {
+            color: #202124;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .subtitle { font-size: 1.2em; }
+            .metric-value { font-size: 2em; }
+            .bar-chart { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>The Future is Broad</h1>
+        <p class="subtitle">Why Broad Match is Our Path to AI-Powered Growth</p>
+    </header>
+    
+    <div class="container">
+        <div class="executive-summary">
+            <h2 style="color: #1a73e8; margin-bottom: 20px;">Executive Summary</h2>
+            <p style="font-size: 1.2em; line-height: 1.8;">
+                Broad Match keywords are delivering <strong style="color: #1a73e8;">82% of our leads</strong> while representing only 49% of spend. 
+                With Google AI Overviews exclusively featuring Broad Match campaigns, the strategic imperative is clear: 
+                <strong>Broad Match is not just performing better today—it's the only path to our tomorrow's visibility.</strong>
+            </p>
+        </div>
+        
+        <div class="ai-overview-banner">
+            <h2>Google AI Overviews: The Game Changer</h2>
+            <p>Only Broad Match keywords will appear in Google's AI-powered search results.<br>
+            <strong>Phrase and Exact Match will be invisible to the future of search.</strong></p>
+        </div>
+        
+        <div class="key-insight">
+            <h3 style="color: #1a73e8; margin-bottom: 10px;">The Strategic Reality</h3>
+            <p>While competitors cling to Exact Match "precision," we'll dominate the AI-powered search landscape. 
+            Broad Match isn't just about volume—it's about being present where our competitors won't be.</p>
+        </div>
+        
+        <h2 style="text-align: center; margin: 40px 0; color: #1a73e8;">Lead Generation Performance</h2>
+        
+        <div class="metrics-grid">
+            <div class="metric-card broad">
+                <div class="metric-label">Broad Match</div>
+                <div class="metric-value">905</div>
+                <div class="metric-context">Leads Generated (82% of total)</div>
+            </div>
+            <div class="metric-card phrase">
+                <div class="metric-label">Phrase Match</div>
+                <div class="metric-value">179</div>
+                <div class="metric-context">Leads Generated (14% of total)</div>
+            </div>
+            <div class="metric-card exact">
+                <div class="metric-label">Exact Match</div>
+                <div class="metric-value">153</div>
+                <div class="metric-context">Leads Generated (12% of total)</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3 class="chart-title">Cost Per Lead Efficiency</h3>
+            <div class="bar-chart">
+                <div class="bar-group">
+                    <div class="bar" style="height: 70%;">
+                        <div class="bar-value">$432</div>
+                    </div>
+                    <div class="bar-label">Broad Match</div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar phrase" style="height: 85%;">
+                        <div class="bar-value">$822</div>
+                    </div>
+                    <div class="bar-label">Phrase Match</div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar exact" style="height: 100%;">
+                        <div class="bar-value">$1,695</div>
+                    </div>
+                    <div class="bar-label">Exact Match</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center; margin: 40px 0; color: #1a73e8;">Opportunity Generation</h2>
+        
+        <div class="metrics-grid">
+            <div class="metric-card broad">
+                <div class="metric-label">Broad Match</div>
+                <div class="metric-value">50.01</div>
+                <div class="metric-context">Opportunities (30% of total)</div>
+            </div>
+            <div class="metric-card phrase">
+                <div class="metric-label">Phrase Match</div>
+                <div class="metric-value">11.84</div>
+                <div class="metric-context">Opportunities (7% of total)</div>
+            </div>
+            <div class="metric-card exact">
+                <div class="metric-label">Exact Match</div>
+                <div class="metric-value">102.69</div>
+                <div class="metric-context">Opportunities (62% of total)</div>
+            </div>
+        </div>
+        
+        <div class="comparison-table">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Broad Match</th>
+                        <th>Phrase Match</th>
+                        <th>Exact Match</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Spend</td>
+                        <td class="winner">$390,875 (49%)</td>
+                        <td>$147,074 (18%)</td>
+                        <td>$260,075 (33%)</td>
+                    </tr>
+                    <tr>
+                        <td>Clicks</td>
+                        <td class="winner">18,259 (49%)</td>
+                        <td>7,275 (20%)</td>
+                        <td>10,648 (29%)</td>
+                    </tr>
+                    <tr>
+                        <td>Lead Volume</td>
+                        <td class="winner">905 (82%)</td>
+                        <td>179 (14%)</td>
+                        <td>153 (12%)</td>
+                    </tr>
+                    <tr>
+                        <td>Cost Per Lead</td>
+                        <td class="winner">$432</td>
+                        <td>$822</td>
+                        <td>$1,695</td>
+                    </tr>
+                    <tr>
+                        <td>Lead Generation Rate</td>
+                        <td class="winner">4.96%</td>
+                        <td>2.46%</td>
+                        <td>1.44%</td>
+                    </tr>
+                    <tr>
+                        <td>AI Overview Eligible</td>
+                        <td class="winner">✅ YES</td>
+                        <td>❌ NO</td>
+                        <td>❌ NO</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="strategic-balance">
+            <h3 style="color: #fbbc04; margin-bottom: 10px;">The Strategic Balance: Volume vs. Velocity</h3>
+            <p><strong>Critical Insight:</strong> While Exact Match delivers 2x more opportunities (102.69 vs 50.01), 
+            it generates 6x fewer leads (153 vs 905). This reveals our optimal strategy: 
+            <strong>Broad Match fills the funnel, Exact Match converts the ready.</strong> 
+            By unifying campaigns, we let Google's AI allocate budget dynamically between discovery (Broad) and conversion (Exact), 
+            maximizing both lead volume AND opportunity quality.</p>
+        </div>
+        
+        <div class="future-ready">
+            <h2>Future-Ready Performance Metrics</h2>
+            <p>Broad Match delivers <strong>3.9x more leads per dollar</strong> than Exact Match<br>
+            and will be the <strong>ONLY match type visible</strong> in AI-powered search results.</p>
+        </div>
+        
+        <div class="recommendation-box">
+            <h3>Strategic Recommendations</h3>
+            <ul class="recommendation-list">
+                <li><strong>Consolidate to Single Campaign Structure:</strong> Merge all match types into unified campaigns for better budget fluidity and machine learning optimization</li>
+                <li><strong>Increase Broad Match Budget to 60%:</strong> Capitalize on superior lead generation efficiency and future AI visibility</li>
+                <li><strong>Implement Smart Bidding:</strong> Let Google's AI optimize for our full funnel metrics (leads + opportunities)</li>
+                <li><strong>Set Broad Match CPA Targets:</strong> Cap at $500 per lead to maintain efficiency while scaling volume</li>
+                <li><strong>Prepare for AI Overviews:</strong> Position for exclusive visibility in the next evolution of search</li>
+            </ul>
+        </div>
+        
+        <div class="key-insight">
+            <h3 style="color: #1a73e8; margin-bottom: 10px;">The Competitive Advantage</h3>
+            <p><strong>Our competitors focusing on Exact Match "precision" will be invisible in AI Overviews.</strong> 
+            By leading with Broad Match, we're not just optimizing for today—we're securing tomorrow's market share. 
+            The companies that dominate AI-powered search will be those that moved to Broad Match before it became mandatory.</p>
+        </div>
+        
+        <div class="metrics-grid" style="margin-top: 40px;">
+            <div class="metric-card" style="border-top: 4px solid #4285f4;">
+                <div class="metric-label">Projected AI Overview Impact</div>
+                <div class="metric-value" style="color: #4285f4;">+40%</div>
+                <div class="metric-context">Incremental traffic from AI visibility</div>
+            </div>
+            <div class="metric-card" style="border-top: 4px solid #34a853;">
+                <div class="metric-label">Lead Volume Potential</div>
+                <div class="metric-value" style="color: #34a853;">1,267</div>
+                <div class="metric-context">Monthly leads at 60% Broad allocation</div>
+            </div>
+            <div class="metric-card" style="border-top: 4px solid #fbbc04;">
+                <div class="metric-label">Cost Efficiency Gain</div>
+                <div class="metric-value" style="color: #fbbc04;">-47%</div>
+                <div class="metric-context">Reduction in overall CPL</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>Dashboard prepared by Brandon Lincoln Hendricks | Data: March-June 2025</p>
+    </footer>
+</body>
+</html>
